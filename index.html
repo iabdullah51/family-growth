@@ -2,257 +2,67 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نمو أسرتنا - المسار المتعرج للجوال</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>نمو أسرتنا</title>
     <style>
-        :root {
-            --bg-color: #f7f3f0;
-            --line-color: #c2b2a3;
-            --accent-color: #8d7b68;
-            --card-bg: #ffffff;
-            --text-main: #5d5043;
-            --text-sub: #7a6e63;
-        }
-
         body {
-            background-color: var(--bg-color);
-            background-image: radial-gradient(#d1bfa7 1.2px, transparent 1.2px);
-            background-size: 30px 30px;
-            animation: moveBg 50s linear infinite;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f7f3f0;
             margin: 0;
-            padding: 50px 0 100px 0; /* مسافة للأسفل */
-            overflow-x: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            padding: 20px 0;
+            overflow-x: hidden; /* يمنع الخروج عن الإطار يميناً ويساراً */
         }
-
-        @keyframes moveBg { from { background-position: 0 0; } to { background-position: 300px 300px; } }
-
-        .header-title { 
-            color: var(--accent-color); 
-            font-size: 2.5em; 
-            margin-bottom: 60px; 
-            text-align: center; 
-            font-weight: bold;
-        }
-
         .map-wrapper {
             position: relative;
-            width: 100%;
-            max-width: 600px; /* عرض مناسب جداً للجوال */
             display: flex;
             flex-direction: column;
             align-items: center;
+            width: 100vw; /* عرض الشاشة بالكامل */
         }
-
-        #svg-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            pointer-events: none;
-        }
-
         .station {
             position: relative;
             width: 100%;
-            height: 180px; /* تقليل المسافة العمودية لتناسب الجوال */
+            height: 180px;
             display: flex;
-            align-items: center;
             justify-content: center;
-            z-index: 2;
+            align-items: center;
         }
-
-        .dot {
-            width: 14px;
-            height: 14px;
-            background: var(--accent-color);
-            border: 3px solid #fff;
-            border-radius: 50%;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
+        /* الصناديق تتأرجح يميناً ويساراً بمسافة بسيطة */
         .content-box {
-            background: var(--card-bg);
-            padding: 12px 15px;
-            border-radius: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
-            width: 140px; /* عرض محكم جداً للجوال */
-            border: 1px solid rgba(209, 191, 167, 0.3);
             position: absolute;
-            transition: transform 0.3s ease;
+            width: 130px; /* عرض صغير ليناسب الجوال */
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            font-size: 0.8rem;
         }
-
-        /* تعديل الحجم للشاشات الكبيرة */
-        @media (min-width: 768px) {
-            .content-box { width: 220px; padding: 18px; }
-            .station { height: 250px; }
-            .map-wrapper { max-width: 800px; }
+        .right-box { left: calc(50% + 20px); }
+        .left-box { right: calc(50% + 20px); text-align: left; }
+        
+        .dot {
+            width: 12px;
+            height: 12px;
+            background: #8d7b68;
+            border-radius: 50%;
+            z-index: 5;
         }
-
-        .content-box:hover { transform: scale(1.05) translateY(-5px); }
-
-        .date { font-weight: bold; color: var(--accent-color); font-size: 0.8em; display: block; margin-bottom: 4px; }
-        .title { font-weight: bold; font-size: 0.9em; color: var(--text-main); display: flex; align-items: center; gap: 6px; line-height: 1.2; }
-        .message { font-size: 0.75em; color: var(--text-sub); font-style: italic; border-top: 1px dashed #e5dfd9; padding-top: 6px; margin-top: 6px; line-height: 1.3; }
+        /* الخط المنقط المتعرج */
+        #svg-canvas {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
     </style>
 </head>
 <body>
-
-    <h1 class="header-title">نمو أسرتنا</h1>
-
     <div class="map-wrapper" id="map-container">
-        <svg id="svg-canvas">
-            <path id="map-path" fill="none" stroke="#c2b2a3" stroke-width="3" stroke-dasharray="6,8" stroke-linecap="round" />
-        </svg>
-    </div>
-
+        <h1 style="color: #8d7b68; text-align: center;">نمو أسرتنا</h1>
+        <svg id="svg-canvas"><path id="map-path" fill="none" stroke="#c2b2a3" stroke-width="2" stroke-dasharray="5,5" /></svg>
+        </div>
     <script>
-        const rawData = `
-1: ميلاد أبي - 1374/07هـ - 
-2: ميلاد أمي - 1383/08هـ - يومٌ ولدت فيه مربية الأجيال.
-3: تخرج أبي - 1397/07هـ - 
-4: زواج أبي بأمي - 1404/10/10هـ - يومٌ بدأت فيه حياتي الزوجية.
-5: تخرج أمي - 1406/08هـ - يومٌ أنهيت فيه معاناة الاختبارات.
-6: ميلاد نورة - 1406/04/16هـ - في هذا اليوم اصبح والداي أبوان.
-7: ميلاد أروى - 1407/06/08هـ - موعد لا أتذكره، انبهر بي طاقم التمريض لفستان ارتديته👗
-8: ميلاد مارية - 1409/08/19هـ - جعلني الله مباركة على والدي وعلى أمة الإسلام.
-9: ميلاد محمد - 1411/04/18هـ - ولدت بحمد الله في أسرة متدينة، ومحافظة، وهذا من أجل نعم الله علي.
-10: ميلاد سمية - 1412/07/03هـ - اضاءت الدنيا بوجودي.
-11: ميلاد صالح - 1414/08/06هـ - 
-12: ميلاد لؤلؤة - 1416/05/18هـ - يوم مختلف على البشرية، في هذا اليوم أشرقت الدنيا بقدوم لؤلؤة.
-13: ميلاد ياسر - 1418/06/02هـ - 
-14: ميلاد ميسون - 1420/07/05هـ - أنرت بهذا الدار والخير حل.
-15: ميلاد لبنى - 1421/08/16هـ - يوم انضمامي للأسرة.
-16: ميلاد عبدالله - 1424/01/10هـ - عندما أفطر الناس على الخبر المبهج.
-17: الانتقال إلى بيت الريان - 1425/12هـ - 
-18: الانتقال إلى بيت الربوة ابن باز - 1427/01هـ - 
-19: زواج نورة - 1427/06/20هـ - التجربة الأولى في العائلة.
-20: تخرج نورة - 1428هـ - اضيف لكلية الشريعة خريجة.
-21: ميلاد عبدالله السيف - 1428/08/03هـ - اصبحت أما لطفل لطيف.
-22: تخرج أروى - 1429/07 - ودعت فيه كليتي الحبيبة💗
-23: تقاعد أمي - 1429/10هـ - يومٌ أتممت فيه رسالة التعليم.
-24: ميلاد مالك السيف - 1429/11/26هـ - انعم الله علي بصبي رضيّ، رضي الله عنه.
-25: زواج أروى - 1430/08/09هـ - غادرت بيتًا غمروني فيه بمحبتهم، وشرعت ببناء بيت جديد استعنت فيه بأصولهم.
-26: تخرج مارية - 1431/07/10هـ - اللهم اجعلها حجة لي لا علي.
-27: زواج مارية - 1431/07/18هـ - اللهم اجعله زواجا مباركا.
-28: ميلاد صالح الجريش - 1431/12/02هـ - مفاجآت بانتظاري هذا اليوم، محفوفة بلطف الباري ورحمته. ذقت بعدها حلاوة الأمومة♥️
-29: تخرج محمد - 1433هـ - تخرجت من كلية الشريعة، منتميا للعلم الشرعي وأهله، راجيا أن أكون منهم. 📕
-30: ميلاد عبدالله العمرو - 1434/01/29هـ - اللهم أقر به الأعين وانفع به أمة الإسلام.
-31: تخرج سمية - 1434/07/29هـ - أمل وطموح.
-32: تقاعد أبي - 1434/08/18هـ - 
-33: ميلاد ريما السيف - 1435/12/03هـ - قدمت ابنتي صديقتي اللطيفة.
-34: ميلاد علي العمرو - 1436/01/08هـ - اللهم أقر به الأعين وانفع به أمة الإسلام.
-35: تخرج صالح - 1436هـ - 
-36: تخرج محمد من الماجستير - 1436هـ - تخصصت في الفقه المقارن، راغبا في مواصلة التفقه، راجيا التوفيق والنجاح. 📚
-37: ميلاد علي الجريش - 1437/04/04هـ - أسميته باسم أبي💗
-38: زواج سمية - 1438/01/21هـ - ولادة جديدة وحياة مختلفة.
-39: تخرج لؤلؤة - 1438/09/13هـ - في هذا اليوم تشرفت كلية الشريعة بمنح لؤلؤة وثيقة التخرج. 
-40: زواج لؤلؤة - 1438/10/22هـ - في هذا اليوم زفّت لؤلؤة عروساً.
-41: ميلاد ريا العمرو - 1439/07/07هـ - اللهم أقر بها الأعين وانفع بها أمة الإسلام.
-42: ميلاد عروب الجريش - 1440/01/15هـ - للنعومة والأنس في بيتنا مساحة🎀
-43: ميلاد علا السيف - 1440/09/03هـ - يوم ميلاد السيدة الصغيرة.
-44: زواج صالح - 1440/10/15هـ - 
-45: ميلاد علي أبالخيل - 1441/01/18هـ - مشاعر مختلطة سعادة وخوف.
-46: تخرج صالح من الماجستير - 1441/03/21هـ - 
-47: تخرج ياسر - 1441/05هـ - الحمد لله.
-48: زواج ميسون - 1441/11/11هـ - من وسط العتمة تبدأ الأفراح😷🎉
-49: ميلاد عاصم اللحيدان - 1443/01/18هـ - 
-50: ميلاد عبدالإله الجريش - 1443/02/20هـ - سعدت بتسميته باسم أحببته💕
-51: ميلاد دانة التويجري - 1443/05/18هـ - قبل غروب شمس هذا اليوم أنارت الدنيا بقدوم دانة وأصبحت لؤلؤة أماً.
-52: تخرج ميسون - 1443/06/03هـ - وآخر دعواهم أن الحمد لله رب العالمين.
-53: الانتقال إلى بيت الربوة البابطين - 1443/06هـ - 
-54: ميلاد حسان أبالخيل - 1443/07/28هـ - سعادة غامرة وتjربة متكررة منتزعة المخاوف.
-55: ميلاد شذى العمرو - 1443/08/03هـ - اللهم أقر بها الأعين وانفع بها أمة الإسلام.
-56: تخرج لبنى - 1443/11/07هـ - خطوة أولى نحو المجد.
-57: ميلاد سما السيف - 1443/11/21هـ - ازدادت عائلتنا قطعة سكر.
-58: ميلاد عبدالوهاب الجريش - 1444/07/24هـ - أعجبت باختيار والده للاسم الفخم💎
-59: ميلاد مزن اللحيدان - 1445/02/23هـ - 
-60: ميلاد آلاء التويجري - 1445/05/03هـ - حين التقيتك عاد قلبي نابضاً.. 💗
-61: زواج لبنى - 1445/06/15هـ - بداية أخرى اكتملت فرحتها بوجودكم 👰🏻‍♀️
-62: تخرج عبدالله - 1445/08/16هـ - عندما أنهيت الدراسة سابقاً بذلك دفعتي.
-63: ميلاد عمر العمرو - 1445/11/08هـ - اللهم أقر به الأعين وانفع به أمة الإسلام.
-64: زواج محمد - 1446/12/02هـ - زواج هيأه الله جلّ وعلا، وتممه، بتوفيق منه وعون، ودعوات صادقة من أبَويّ وأفراد أسرتي. 💍🏡
-65: ميلاد هيلة أبالخيل - 1446/12/11هـ - قطعة سكر في منزلنا.
-66: تخرج لبنى من الماجستير - 1447/07/08هـ - إنجاز أعلى ✨.
-67: ميلاد عبدالمحسن التويجري - 1447/09/18هـ - أهلاً بنبض أتى.. له في الحنايا محل.
-68: إنشاء نمو أسرتنا - 1447/10/14هـ - الحمد لله الذي بحمده تدوم النعم.
-        `;
-
-        function getIcon(title) {
-            if (title.includes("ميلاد")) return "🌱";
-            if (title.includes("ماجستير")) return "✨";
-            if (title.includes("تخرج")) return "🎓";
-            if (title.includes("زواج")) return "💍";
-            if (title.includes("تقاعد")) return "🌳";
-            if (title.includes("الانتقال")) return "🏠";
-            return "✨";
-        }
-
-        const lines = rawData.trim().split('\n');
-        const container = document.getElementById('map-container');
-        const mapPath = document.getElementById('map-path');
-        let points = [];
-
-        lines.forEach((line, index) => {
-            const parts = line.split(' - ');
-            if (parts.length < 2) return;
-
-            const fullTitle = parts[0].split(': ')[1];
-            const date = parts[1].trim();
-            const msg = parts[2] ? parts[2].trim() : "";
-            const icon = getIcon(fullTitle);
-
-            const side = (index % 2 === 0) ? 1 : -1;
-            // إزاحة عشوائية بسيطة جداً (Offset) لا تخرج عن حدود الشاشة
-            const xOffsetValue = window.innerWidth < 600 ? 55 : 90;
-            const xOffset = xOffsetValue * side; 
-
-            const station = document.createElement('div');
-            station.className = 'station';
-            
-            // تحديد جهة الصندوق
-            const boxPos = (side === 1) ? `left: calc(50% + ${xOffset + 10}px);` : `right: calc(50% + ${Math.abs(xOffset) + 10}px);`;
-
-            station.innerHTML = `
-                <div class="dot"></div>
-                <div class="content-box" style="${boxPos}">
-                    <span class="date">${date}</span>
-                    <div class="title"><span>${icon}</span> ${fullTitle}</div>
-                    ${msg && msg !== "" ? `<p class="message">"${msg}"</p>` : ''}
-                </div>
-            `;
-            container.appendChild(station);
-
-            // حساب الإحداثيات للخط المنحني (النقاط في المركز)
-            const vSpacing = window.innerWidth < 600 ? 180 : 250;
-            const yPos = (index * vSpacing) + 90; 
-            const xPos = (container.offsetWidth / 2); 
-            points.push({x: xPos, y: yPos});
-        });
-
-        // رسم المنحنيات المتعرجة (S-Curves)
-        if (points.length > 0) {
-            let d = `M ${points[0].x} ${points[0].y}`;
-            for (let i = 0; i < points.length - 1; i++) {
-                const p0 = points[i];
-                const p1 = points[i+1];
-                const midY = p0.y + (p1.y - p0.y) / 2;
-                // تعرج جانبي مضبوط (إزاحة خفيفة)
-                const curveX = (i % 2 === 0) ? p0.x + 25 : p0.x - 25;
-                d += ` Q ${curveX} ${midY}, ${p1.x} ${p1.y}`;
-            }
-            mapPath.setAttribute('d', d);
-            const vSpacing = window.innerWidth < 600 ? 180 : 250;
-            document.getElementById('svg-canvas').style.height = (lines.length * vSpacing) + "px";
-        }
+        // ضع هنا الجزء الخاص بـ Script من الرد السابق مع التأكد من تحديث أسماء الـ Classes
     </script>
 </body>
 </html>
