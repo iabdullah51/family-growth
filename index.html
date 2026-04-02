@@ -3,118 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نمو أسرتنا</title>
+    <title>نمو أسرتنا - المسار المتعرج للجوال</title>
     <style>
+        :root {
+            --bg-color: #f7f3f0;
+            --line-color: #c2b2a3;
+            --accent-color: #8d7b68;
+            --card-bg: #ffffff;
+            --text-main: #5d5043;
+            --text-sub: #7a6e63;
+        }
+
         body {
-            background-color: #f7f3f0;
-            background-image: radial-gradient(#d1bfa7 1px, transparent 1px);
-            background-size: 20px 20px;
+            background-color: var(--bg-color);
+            background-image: radial-gradient(#d1bfa7 1.2px, transparent 1.2px);
+            background-size: 30px 30px;
+            animation: moveBg 50s linear infinite;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            padding: 0;
+            padding: 50px 0 100px 0; /* مسافة للأسفل */
+            overflow-x: hidden;
             display: flex;
             flex-direction: column;
             align-items: center;
-            overflow-x: hidden; /* يمنع التصفح الجانبي نهائياً */
         }
 
-        .header-title {
-            color: #8d7b68;
-            font-size: 1.8rem;
-            margin: 30px 0;
-            text-align: center;
+        @keyframes moveBg { from { background-position: 0 0; } to { background-position: 300px 300px; } }
+
+        .header-title { 
+            color: var(--accent-color); 
+            font-size: 2.5em; 
+            margin-bottom: 60px; 
+            text-align: center; 
+            font-weight: bold;
         }
 
-        /* الحاوية الرئيسية مرنة 100% */
-        .timeline {
+        .map-wrapper {
             position: relative;
             width: 100%;
-            max-width: 800px;
-            padding: 20px 0;
+            max-width: 600px; /* عرض مناسب جداً للجوال */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        /* الخط العمودي في المنتصف */
-        .timeline::after {
-            content: '';
+        #svg-canvas {
             position: absolute;
-            width: 2px;
-            background: #c2b2a3;
             top: 0;
-            bottom: 0;
-            left: 50%;
-            margin-left: -1px;
-            border-left: 2px dashed #c2b2a3;
-        }
-
-        .container {
-            padding: 10px 40px;
-            position: relative;
-            background-color: inherit;
-            width: 50%; /* نصف الشاشة */
-            box-sizing: border-box;
-        }
-
-        /* النقطة على الخط */
-        .container::after {
-            content: '';
-            position: absolute;
-            width: 12px;
-            height: 12px;
-            right: -6px;
-            background-color: #8d7b68;
-            border: 2px solid #fff;
-            top: 20px;
-            border-radius: 50%;
+            left: 0;
+            width: 100%;
+            height: 100%;
             z-index: 1;
+            pointer-events: none;
         }
 
-        /* الصناديق في الجهة اليمنى */
-        .right { left: 50%; }
-
-        /* الصناديق في الجهة اليسرى */
-        .left { left: 0; }
-
-        .left::after { left: -6px; }
-
-        .content {
-            padding: 15px;
-            background-color: white;
+        .station {
             position: relative;
+            width: 100%;
+            height: 180px; /* تقليل المسافة العمودية لتناسب الجوال */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+        }
+
+        .dot {
+            width: 14px;
+            height: 14px;
+            background: var(--accent-color);
+            border: 3px solid #fff;
+            border-radius: 50%;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .content-box {
+            background: var(--card-bg);
+            padding: 12px 15px;
             border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            border: 1px solid #e5dfd9;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+            width: 140px; /* عرض محكم جداً للجوال */
+            border: 1px solid rgba(209, 191, 167, 0.3);
+            position: absolute;
+            transition: transform 0.3s ease;
         }
 
-        .date { font-weight: bold; color: #8d7b68; font-size: 0.75rem; }
-        .title { font-weight: bold; font-size: 0.95rem; margin: 5px 0; color: #5d5043; }
-        .message { font-size: 0.8rem; color: #7a6e63; font-style: italic; margin-top: 5px; border-top: 1px solid #eee; padding-top: 5px; }
-
-        /* تعديلات الجوال (أهم جزء) */
-        @media screen and (max-width: 600px) {
-            .timeline::after { left: 31px; } /* نقل الخط لليسار قليلاً */
-            
-            .container {
-                width: 100%;
-                padding-left: 70px;
-                padding-right: 25px;
-            }
-            
-            .container::after {
-                left: 25px; /* وضع النقطة على الخط الجديد */
-            }
-
-            .left, .right { left: 0; }
-            
-            .header-title { font-size: 1.5rem; }
+        /* تعديل الحجم للشاشات الكبيرة */
+        @media (min-width: 768px) {
+            .content-box { width: 220px; padding: 18px; }
+            .station { height: 250px; }
+            .map-wrapper { max-width: 800px; }
         }
+
+        .content-box:hover { transform: scale(1.05) translateY(-5px); }
+
+        .date { font-weight: bold; color: var(--accent-color); font-size: 0.8em; display: block; margin-bottom: 4px; }
+        .title { font-weight: bold; font-size: 0.9em; color: var(--text-main); display: flex; align-items: center; gap: 6px; line-height: 1.2; }
+        .message { font-size: 0.75em; color: var(--text-sub); font-style: italic; border-top: 1px dashed #e5dfd9; padding-top: 6px; margin-top: 6px; line-height: 1.3; }
     </style>
 </head>
 <body>
 
     <h1 class="header-title">نمو أسرتنا</h1>
 
-    <div class="timeline" id="timeline-id">
-        </div>
+    <div class="map-wrapper" id="map-container">
+        <svg id="svg-canvas">
+            <path id="map-path" fill="none" stroke="#c2b2a3" stroke-width="3" stroke-dasharray="6,8" stroke-linecap="round" />
+        </svg>
+    </div>
 
     <script>
         const rawData = `
@@ -171,7 +169,7 @@
 51: ميلاد دانة التويجري - 1443/05/18هـ - قبل غروب شمس هذا اليوم أنارت الدنيا بقدوم دانة وأصبحت لؤلؤة أماً.
 52: تخرج ميسون - 1443/06/03هـ - وآخر دعواهم أن الحمد لله رب العالمين.
 53: الانتقال إلى بيت الربوة البابطين - 1443/06هـ - 
-54: ميلاد حسان أبالخيل - 1443/07/28هـ - سعادة غامرة وتجربة متكررة منتزعة المخاوف.
+54: ميلاد حسان أبالخيل - 1443/07/28هـ - سعادة غامرة وتjربة متكررة منتزعة المخاوف.
 55: ميلاد شذى العمرو - 1443/08/03هـ - اللهم أقر بها الأعين وانفع بها أمة الإسلام.
 56: تخرج لبنى - 1443/11/07هـ - خطوة أولى نحو المجد.
 57: ميلاد سما السيف - 1443/11/21هـ - ازدادت عائلتنا قطعة سكر.
@@ -188,29 +186,73 @@
 68: إنشاء نمو أسرتنا - 1447/10/14هـ - الحمد لله الذي بحمده تدوم النعم.
         `;
 
-        const timeline = document.getElementById('timeline-id');
+        function getIcon(title) {
+            if (title.includes("ميلاد")) return "🌱";
+            if (title.includes("ماجستير")) return "✨";
+            if (title.includes("تخرج")) return "🎓";
+            if (title.includes("زواج")) return "💍";
+            if (title.includes("تقاعد")) return "🌳";
+            if (title.includes("الانتقال")) return "🏠";
+            return "✨";
+        }
+
         const lines = rawData.trim().split('\n');
+        const container = document.getElementById('map-container');
+        const mapPath = document.getElementById('map-path');
+        let points = [];
 
         lines.forEach((line, index) => {
             const parts = line.split(' - ');
             if (parts.length < 2) return;
 
-            const titlePart = parts[0].split(': ')[1];
-            const date = parts[1];
-            const msg = parts[2] || "";
-            const side = (index % 2 === 0) ? "right" : "left";
+            const fullTitle = parts[0].split(': ')[1];
+            const date = parts[1].trim();
+            const msg = parts[2] ? parts[2].trim() : "";
+            const icon = getIcon(fullTitle);
 
-            const container = document.createElement('div');
-            container.className = `container ${side}`;
-            container.innerHTML = `
-                <div class="content">
+            const side = (index % 2 === 0) ? 1 : -1;
+            // إزاحة عشوائية بسيطة جداً (Offset) لا تخرج عن حدود الشاشة
+            const xOffsetValue = window.innerWidth < 600 ? 55 : 90;
+            const xOffset = xOffsetValue * side; 
+
+            const station = document.createElement('div');
+            station.className = 'station';
+            
+            // تحديد جهة الصندوق
+            const boxPos = (side === 1) ? `left: calc(50% + ${xOffset + 10}px);` : `right: calc(50% + ${Math.abs(xOffset) + 10}px);`;
+
+            station.innerHTML = `
+                <div class="dot"></div>
+                <div class="content-box" style="${boxPos}">
                     <span class="date">${date}</span>
-                    <div class="title">${titlePart}</div>
-                    ${msg ? `<p class="message">${msg}</p>` : ''}
+                    <div class="title"><span>${icon}</span> ${fullTitle}</div>
+                    ${msg && msg !== "" ? `<p class="message">"${msg}"</p>` : ''}
                 </div>
             `;
-            timeline.appendChild(container);
+            container.appendChild(station);
+
+            // حساب الإحداثيات للخط المنحني (النقاط في المركز)
+            const vSpacing = window.innerWidth < 600 ? 180 : 250;
+            const yPos = (index * vSpacing) + 90; 
+            const xPos = (container.offsetWidth / 2); 
+            points.push({x: xPos, y: yPos});
         });
+
+        // رسم المنحنيات المتعرجة (S-Curves)
+        if (points.length > 0) {
+            let d = `M ${points[0].x} ${points[0].y}`;
+            for (let i = 0; i < points.length - 1; i++) {
+                const p0 = points[i];
+                const p1 = points[i+1];
+                const midY = p0.y + (p1.y - p0.y) / 2;
+                // تعرج جانبي مضبوط (إزاحة خفيفة)
+                const curveX = (i % 2 === 0) ? p0.x + 25 : p0.x - 25;
+                d += ` Q ${curveX} ${midY}, ${p1.x} ${p1.y}`;
+            }
+            mapPath.setAttribute('d', d);
+            const vSpacing = window.innerWidth < 600 ? 180 : 250;
+            document.getElementById('svg-canvas').style.height = (lines.length * vSpacing) + "px";
+        }
     </script>
 </body>
 </html>
