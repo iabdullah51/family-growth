@@ -2,113 +2,119 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>نمو أسرتنا</title>
     <style>
-        :root {
-            --bg-color: #f7f3f0;
-            --line-color: #c2b2a3;
-            --accent-color: #8d7b68;
-            --card-bg: #ffffff;
-            --text-main: #5d5043;
-            --text-sub: #7a6e63;
-        }
-
         body {
-            background-color: var(--bg-color);
-            background-image: radial-gradient(#d1bfa7 1.2px, transparent 1.2px);
-            background-size: 30px 30px;
+            background-color: #f7f3f0;
+            background-image: radial-gradient(#d1bfa7 1px, transparent 1px);
+            background-size: 20px 20px;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden; /* يمنع التصفح الجانبي نهائياً */
+        }
+
+        .header-title {
+            color: #8d7b68;
+            font-size: 1.8rem;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        /* الحاوية الرئيسية مرنة 100% */
+        .timeline {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
             padding: 20px 0;
-            overflow-x: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
         }
 
-        .header-title { 
-            color: var(--accent-color); 
-            font-size: 2.2em; 
-            margin: 40px 0; 
-            text-align: center; 
-            font-weight: bold;
-        }
-
-        .map-wrapper {
-            position: relative;
-            width: 100%;
-            max-width: 600px; /* تقليل العرض ليناسب الجوال */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 0 10px;
-        }
-
-        #svg-canvas {
+        /* الخط العمودي في المنتصف */
+        .timeline::after {
+            content: '';
             position: absolute;
+            width: 2px;
+            background: #c2b2a3;
             top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        .station {
-            position: relative;
-            width: 100%;
-            height: 220px; 
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2;
-        }
-
-        .dot {
-            width: 14px;
-            height: 14px;
-            background: var(--accent-color);
-            border: 3px solid #fff;
-            border-radius: 50%;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            position: absolute;
+            bottom: 0;
             left: 50%;
-            transform: translateX(-50%);
+            margin-left: -1px;
+            border-left: 2px dashed #c2b2a3;
         }
 
-        .content-box {
-            background: var(--card-bg);
-            padding: 15px;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            width: 160px; /* عرض مناسب للجوال */
-            border: 1px solid rgba(209, 191, 167, 0.3);
+        .container {
+            padding: 10px 40px;
+            position: relative;
+            background-color: inherit;
+            width: 50%; /* نصف الشاشة */
+            box-sizing: border-box;
+        }
+
+        /* النقطة على الخط */
+        .container::after {
+            content: '';
             position: absolute;
-            transition: transform 0.3s ease;
+            width: 12px;
+            height: 12px;
+            right: -6px;
+            background-color: #8d7b68;
+            border: 2px solid #fff;
+            top: 20px;
+            border-radius: 50%;
+            z-index: 1;
         }
 
-        /* تنسيق خاص للشاشات الكبيرة */
-        @media (min-width: 768px) {
-            .content-box { width: 220px; padding: 18px; }
-            .header-title { font-size: 3em; }
-            .map-wrapper { max-width: 800px; }
+        /* الصناديق في الجهة اليمنى */
+        .right { left: 50%; }
+
+        /* الصناديق في الجهة اليسرى */
+        .left { left: 0; }
+
+        .left::after { left: -6px; }
+
+        .content {
+            padding: 15px;
+            background-color: white;
+            position: relative;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            border: 1px solid #e5dfd9;
         }
 
-        .date { font-weight: bold; color: var(--accent-color); font-size: 0.8em; display: block; margin-bottom: 4px; }
-        .title { font-weight: bold; font-size: 1em; color: var(--text-main); display: flex; align-items: center; gap: 8px; line-height: 1.2; }
-        .message { font-size: 0.85em; color: var(--text-sub); font-style: italic; border-top: 1px dashed #e5dfd9; padding-top: 8px; margin-top: 8px; line-height: 1.4; }
+        .date { font-weight: bold; color: #8d7b68; font-size: 0.75rem; }
+        .title { font-weight: bold; font-size: 0.95rem; margin: 5px 0; color: #5d5043; }
+        .message { font-size: 0.8rem; color: #7a6e63; font-style: italic; margin-top: 5px; border-top: 1px solid #eee; padding-top: 5px; }
+
+        /* تعديلات الجوال (أهم جزء) */
+        @media screen and (max-width: 600px) {
+            .timeline::after { left: 31px; } /* نقل الخط لليسار قليلاً */
+            
+            .container {
+                width: 100%;
+                padding-left: 70px;
+                padding-right: 25px;
+            }
+            
+            .container::after {
+                left: 25px; /* وضع النقطة على الخط الجديد */
+            }
+
+            .left, .right { left: 0; }
+            
+            .header-title { font-size: 1.5rem; }
+        }
     </style>
 </head>
 <body>
 
     <h1 class="header-title">نمو أسرتنا</h1>
 
-    <div class="map-wrapper" id="map-container">
-        <svg id="svg-canvas">
-            <path id="map-path" fill="none" stroke="#c2b2a3" stroke-width="3" stroke-dasharray="6,8" stroke-linecap="round" />
-        </svg>
-    </div>
+    <div class="timeline" id="timeline-id">
+        </div>
 
     <script>
         const rawData = `
@@ -182,69 +188,29 @@
 68: إنشاء نمو أسرتنا - 1447/10/14هـ - الحمد لله الذي بحمده تدوم النعم.
         `;
 
-        function getIcon(title) {
-            if (title.includes("ميلاد")) return "🌱";
-            if (title.includes("ماجستير")) return "✨";
-            if (title.includes("تخرج")) return "🎓";
-            if (title.includes("زواج")) return "💍";
-            if (title.includes("تقاعد")) return "🌳";
-            if (title.includes("الانتقال")) return "🏠";
-            return "✨";
-        }
-
+        const timeline = document.getElementById('timeline-id');
         const lines = rawData.trim().split('\n');
-        const container = document.getElementById('map-container');
-        const mapPath = document.getElementById('map-path');
-        let points = [];
 
         lines.forEach((line, index) => {
             const parts = line.split(' - ');
             if (parts.length < 2) return;
 
-            const fullTitle = parts[0].split(': ')[1];
-            const date = parts[1].trim();
-            const msg = parts[2] ? parts[2].trim() : "";
-            const icon = getIcon(fullTitle);
+            const titlePart = parts[0].split(': ')[1];
+            const date = parts[1];
+            const msg = parts[2] || "";
+            const side = (index % 2 === 0) ? "right" : "left";
 
-            const side = (index % 2 === 0) ? 1 : -1;
-            // تقليل المسافة الجانبية (Offset) لتناسب الجوال
-            const xOffsetValue = window.innerWidth < 600 ? 50 : 80;
-            const xOffset = xOffsetValue * side; 
-
-            const station = document.createElement('div');
-            station.className = 'station';
-            
-            // تحديد مكان الصندوق بناءً على الجهة
-            const boxPos = (side === 1) ? `left: calc(50% + ${xOffset + 15}px);` : `right: calc(50% + ${Math.abs(xOffset) + 15}px);`;
-
-            station.innerHTML = `
-                <div class="dot"></div>
-                <div class="content-box" style="${boxPos}">
+            const container = document.createElement('div');
+            container.className = `container ${side}`;
+            container.innerHTML = `
+                <div class="content">
                     <span class="date">${date}</span>
-                    <div class="title"><span>${icon}</span> ${fullTitle}</div>
-                    ${msg && msg !== "" ? `<p class="message">"${msg}"</p>` : ''}
+                    <div class="title">${titlePart}</div>
+                    ${msg ? `<p class="message">${msg}</p>` : ''}
                 </div>
             `;
-            container.appendChild(station);
-
-            const yPos = (index * 220) + 110; 
-            const xPos = (container.offsetWidth / 2); // النقاط في المركز دائماً لثبات الخط
-            points.push({x: xPos, y: yPos});
+            timeline.appendChild(container);
         });
-
-        if (points.length > 0) {
-            let d = `M ${points[0].x} ${points[0].y}`;
-            for (let i = 0; i < points.length - 1; i++) {
-                const p0 = points[i];
-                const p1 = points[i+1];
-                const midY = p0.y + (p1.y - p0.y) / 2;
-                // إنشاء تعرج بسيط ومنضبط
-                const curveX = (i % 2 === 0) ? p0.x + 30 : p0.x - 30;
-                d += ` Q ${curveX} ${midY}, ${p1.x} ${p1.y}`;
-            }
-            mapPath.setAttribute('d', d);
-            document.getElementById('svg-canvas').style.height = (lines.length * 220) + "px";
-        }
     </script>
 </body>
 </html>
