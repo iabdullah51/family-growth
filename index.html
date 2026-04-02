@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>نمو أسرتنا</title>
     <style>
         :root {
@@ -17,35 +17,32 @@
         body {
             background-color: var(--bg-color);
             background-image: radial-gradient(#d1bfa7 1.2px, transparent 1.2px);
-            background-size: 35px 35px;
-            animation: moveBg 50s linear infinite;
+            background-size: 30px 30px;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            padding: 50px 0;
+            padding: 20px 0;
             overflow-x: hidden;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
-        @keyframes moveBg { from { background-position: 0 0; } to { background-position: 300px 300px; } }
-
         .header-title { 
             color: var(--accent-color); 
-            font-size: 3em; 
-            margin-bottom: 80px; 
+            font-size: 2.2em; 
+            margin: 40px 0; 
             text-align: center; 
             font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.05);
         }
 
         .map-wrapper {
             position: relative;
             width: 100%;
-            max-width: 800px;
+            max-width: 600px; /* تقليل العرض ليناسب الجوال */
             display: flex;
             flex-direction: column;
             align-items: center;
+            padding: 0 10px;
         }
 
         #svg-canvas {
@@ -61,7 +58,7 @@
         .station {
             position: relative;
             width: 100%;
-            height: 250px; 
+            height: 220px; 
             display: flex;
             align-items: center;
             justify-content: center;
@@ -69,12 +66,12 @@
         }
 
         .dot {
-            width: 16px;
-            height: 16px;
+            width: 14px;
+            height: 14px;
             background: var(--accent-color);
-            border: 4px solid #fff;
+            border: 3px solid #fff;
             border-radius: 50%;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
@@ -82,26 +79,25 @@
 
         .content-box {
             background: var(--card-bg);
-            padding: 18px;
-            border-radius: 18px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.04);
-            width: 250px;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            width: 160px; /* عرض مناسب للجوال */
             border: 1px solid rgba(209, 191, 167, 0.3);
             position: absolute;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: transform 0.3s ease;
         }
 
-        @media (max-width: 600px) {
-            .content-box { width: 150px; padding: 12px; }
-            .station { height: 200px; }
-            .header-title { font-size: 2em; }
+        /* تنسيق خاص للشاشات الكبيرة */
+        @media (min-width: 768px) {
+            .content-box { width: 220px; padding: 18px; }
+            .header-title { font-size: 3em; }
+            .map-wrapper { max-width: 800px; }
         }
 
-        .content-box:hover { transform: scale(1.05) translateY(-5px); box-shadow: 0 12px 30px rgba(0,0,0,0.08); }
-
-        .date { font-weight: bold; color: var(--accent-color); font-size: 0.85em; display: block; margin-bottom: 6px; }
-        .title { font-weight: bold; font-size: 1.1em; color: var(--text-main); display: flex; align-items: center; gap: 10px; line-height: 1.2; }
-        .message { font-size: 0.88em; color: var(--text-sub); font-style: italic; border-top: 1px dashed #e5dfd9; padding-top: 10px; margin-top: 10px; line-height: 1.5; }
+        .date { font-weight: bold; color: var(--accent-color); font-size: 0.8em; display: block; margin-bottom: 4px; }
+        .title { font-weight: bold; font-size: 1em; color: var(--text-main); display: flex; align-items: center; gap: 8px; line-height: 1.2; }
+        .message { font-size: 0.85em; color: var(--text-sub); font-style: italic; border-top: 1px dashed #e5dfd9; padding-top: 8px; margin-top: 8px; line-height: 1.4; }
     </style>
 </head>
 <body>
@@ -110,7 +106,7 @@
 
     <div class="map-wrapper" id="map-container">
         <svg id="svg-canvas">
-            <path id="map-path" fill="none" stroke="#c2b2a3" stroke-width="4" stroke-dasharray="8,10" stroke-linecap="round" />
+            <path id="map-path" fill="none" stroke="#c2b2a3" stroke-width="3" stroke-dasharray="6,8" stroke-linecap="round" />
         </svg>
     </div>
 
@@ -128,7 +124,7 @@
 10: ميلاد سمية - 1412/07/03هـ - اضاءت الدنيا بوجودي.
 11: ميلاد صالح - 1414/08/06هـ - 
 12: ميلاد لؤلؤة - 1416/05/18هـ - يوم مختلف على البشرية، في هذا اليوم أشرقت الدنيا بقدوم لؤلؤة.
-13: ميلاد ياسر - 1418/06/02هـ - أكيد المستقبل أحسن.
+13: ميلاد ياسر - 1418/06/02هـ - 
 14: ميلاد ميسون - 1420/07/05هـ - أنرت بهذا الدار والخير حل.
 15: ميلاد لبنى - 1421/08/16هـ - يوم انضمامي للأسرة.
 16: ميلاد عبدالله - 1424/01/10هـ - عندما أفطر الناس على الخبر المبهج.
@@ -162,7 +158,7 @@
 44: زواج صالح - 1440/10/15هـ - 
 45: ميلاد علي أبالخيل - 1441/01/18هـ - مشاعر مختلطة سعادة وخوف.
 46: تخرج صالح من الماجستير - 1441/03/21هـ - 
-47: تخرج ياسر - 1441/05هـ - أكيد المستقبل أحسن.
+47: تخرج ياسر - 1441/05هـ - الحمد لله.
 48: زواج ميسون - 1441/11/11هـ - من وسط العتمة تبدأ الأفراح😷🎉
 49: ميلاد عاصم اللحيدان - 1443/01/18هـ - 
 50: ميلاد عبدالإله الجريش - 1443/02/20هـ - سعدت بتسميته باسم أحببته💕
@@ -210,15 +206,20 @@
             const msg = parts[2] ? parts[2].trim() : "";
             const icon = getIcon(fullTitle);
 
+            const side = (index % 2 === 0) ? 1 : -1;
+            // تقليل المسافة الجانبية (Offset) لتناسب الجوال
+            const xOffsetValue = window.innerWidth < 600 ? 50 : 80;
+            const xOffset = xOffsetValue * side; 
+
             const station = document.createElement('div');
             station.className = 'station';
             
-            const side = (index % 2 === 0) ? 1 : -1;
-            const xOffset = (Math.random() * 80 + 50) * side; 
+            // تحديد مكان الصندوق بناءً على الجهة
+            const boxPos = (side === 1) ? `left: calc(50% + ${xOffset + 15}px);` : `right: calc(50% + ${Math.abs(xOffset) + 15}px);`;
 
             station.innerHTML = `
-                <div class="dot" style="margin-left: ${xOffset}px;"></div>
-                <div class="content-box" style="left: calc(50% + ${xOffset + (side * 165)}px); transform: translateX(-50%);">
+                <div class="dot"></div>
+                <div class="content-box" style="${boxPos}">
                     <span class="date">${date}</span>
                     <div class="title"><span>${icon}</span> ${fullTitle}</div>
                     ${msg && msg !== "" ? `<p class="message">"${msg}"</p>` : ''}
@@ -226,9 +227,8 @@
             `;
             container.appendChild(station);
 
-            const vSpacing = window.innerWidth < 600 ? 200 : 250;
-            const yPos = (index * vSpacing) + 125; 
-            const xPos = (container.offsetWidth / 2) + xOffset;
+            const yPos = (index * 220) + 110; 
+            const xPos = (container.offsetWidth / 2); // النقاط في المركز دائماً لثبات الخط
             points.push({x: xPos, y: yPos});
         });
 
@@ -237,13 +237,13 @@
             for (let i = 0; i < points.length - 1; i++) {
                 const p0 = points[i];
                 const p1 = points[i+1];
-                const cp1y = p0.y + (p1.y - p0.y) / 2;
-                const cp2y = p0.y + (p1.y - p0.y) / 2;
-                d += ` C ${p0.x} ${cp1y}, ${p1.x} ${cp2y}, ${p1.x} ${p1.y}`;
+                const midY = p0.y + (p1.y - p0.y) / 2;
+                // إنشاء تعرج بسيط ومنضبط
+                const curveX = (i % 2 === 0) ? p0.x + 30 : p0.x - 30;
+                d += ` Q ${curveX} ${midY}, ${p1.x} ${p1.y}`;
             }
             mapPath.setAttribute('d', d);
-            const vSpacing = window.innerWidth < 600 ? 200 : 250;
-            document.getElementById('svg-canvas').style.height = (lines.length * vSpacing) + "px";
+            document.getElementById('svg-canvas').style.height = (lines.length * 220) + "px";
         }
     </script>
 </body>
