@@ -20,7 +20,7 @@
             background-size: 30px 30px;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            padding: 40px 0;
+            padding: 40px 0 100px 0;
             overflow-x: hidden;
             display: flex;
             flex-direction: column;
@@ -38,8 +38,7 @@
         .map-wrapper {
             position: relative;
             width: 100%;
-            max-width: 500px; /* حجم مثالي للجوال */
-            min-height: 1000px;
+            max-width: 500px;
         }
 
         #svg-canvas {
@@ -55,7 +54,7 @@
         .station {
             position: relative;
             width: 100%;
-            height: 200px; /* مسافة عمودية كافية */
+            height: 200px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -76,21 +75,51 @@
 
         .content-box {
             background: var(--card-bg);
-            padding: 12px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-            width: 145px; /* عرض يضمن عدم الخروج عن الشاشة */
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            width: 150px;
             border: 1px solid rgba(209, 191, 167, 0.3);
             position: absolute;
         }
 
-        /* التعرج يميناً ويساراً */
-        .right-box { left: calc(50% + 15px); }
-        .left-box { right: calc(50% + 15px); text-align: right; }
+        .right-box { left: calc(50% + 20px); }
+        .left-box { right: calc(50% + 20px); text-align: right; }
 
-        .date { font-weight: bold; color: var(--accent-color); font-size: 0.75em; display: block; margin-bottom: 3px; }
-        .title { font-weight: bold; font-size: 0.9em; color: var(--text-main); line-height: 1.2; display: block; }
-        .message { font-size: 0.75em; color: var(--text-sub); font-style: italic; border-top: 1px dashed #eee; padding-top: 5px; margin-top: 5px; line-height: 1.3; }
+        .date { font-weight: bold; color: var(--accent-color); font-size: 0.8em; display: block; margin-bottom: 5px; }
+        
+        .title-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: bold;
+            font-size: 0.95em;
+            color: var(--text-main);
+            line-height: 1.3;
+        }
+
+        .icon-circle {
+            background: #fdfaf7;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1em;
+            flex-shrink: 0;
+            border: 1px solid #eee;
+        }
+
+        .message { 
+            font-size: 0.8em; 
+            color: var(--text-sub); 
+            font-style: italic; 
+            border-top: 1px dashed #eee; 
+            padding-top: 8px; 
+            margin-top: 8px; 
+            line-height: 1.4; 
+        }
     </style>
 </head>
 <body>
@@ -99,7 +128,7 @@
 
     <div class="map-wrapper" id="map-container">
         <svg id="svg-canvas">
-            <path id="map-path" fill="none" stroke="#c2b2a3" stroke-width="2.5" stroke-dasharray="5,7" stroke-linecap="round" />
+            <path id="map-path" fill="none" stroke="#c2b2a3" stroke-width="2.5" stroke-dasharray="6,8" stroke-linecap="round" />
         </svg>
     </div>
 
@@ -175,6 +204,17 @@
 68: إنشاء نمو أسرتنا - 1447/10/14هـ - الحمد لله الذي بحمده تدوم النعم.
         `;
 
+        function getIcon(text) {
+            if (text.includes("ميلاد")) return "🌱";
+            if (text.includes("زواج")) return "💍";
+            if (text.includes("تخرج")) return "🎓";
+            if (text.includes("تقاعد")) return "🌳";
+            if (text.includes("بيت") || text.includes("الانتقال")) return "🏠";
+            if (text.includes("ماجستير")) return "📚";
+            if (text.includes("إنشاء")) return "✨";
+            return "📍";
+        }
+
         const container = document.getElementById('map-container');
         const mapPath = document.getElementById('map-path');
         const lines = rawData.trim().split('\n');
@@ -184,9 +224,10 @@
             const parts = line.split(' - ');
             if (parts.length < 2) return;
 
-            const title = parts[0].split(': ')[1];
+            const fullTitle = parts[0].split(': ')[1];
             const date = parts[1];
             const msg = parts[2] || "";
+            const icon = getIcon(fullTitle);
             const isRight = index % 2 === 0;
 
             const station = document.createElement('div');
@@ -195,26 +236,28 @@
                 <div class="dot"></div>
                 <div class="content-box ${isRight ? 'right-box' : 'left-box'}">
                     <span class="date">${date}</span>
-                    <span class="title">${title}</span>
+                    <div class="title-wrapper">
+                        <div class="icon-circle">${icon}</div>
+                        <span>${fullTitle}</span>
+                    </div>
                     ${msg ? `<p class="message">${msg}</p>` : ''}
                 </div>
             `;
             container.appendChild(station);
 
             const yPos = (index * 200) + 100;
-            points.push({x: 50, y: yPos}); // 50 تعني المنتصف مئوياً
+            points.push({y: yPos});
         });
 
         // رسم الخط المتعرج
         setTimeout(() => {
-            const width = container.offsetWidth;
-            const centerX = width / 2;
+            const centerX = container.offsetWidth / 2;
             let d = `M ${centerX} ${points[0].y}`;
             
             for (let i = 0; i < points.length - 1; i++) {
                 const p1 = points[i+1];
                 const midY = points[i].y + 100;
-                const curveX = (i % 2 === 0) ? centerX + 20 : centerX - 20;
+                const curveX = (i % 2 === 0) ? centerX + 25 : centerX - 25;
                 d += ` Q ${curveX} ${midY}, ${centerX} ${p1.y}`;
             }
             mapPath.setAttribute('d', d);
